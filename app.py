@@ -45,6 +45,11 @@ if app_id:
     })
 
     df["Live Price"] = df["Country"].apply(lambda cc: get_live_price(app_id, cc.lower()))
-    df["Δ %"] = ((df["Live Price"] - df["Recommended SRP"]) / df["Recommended SRP"] * 100).round(2)
+    df["Δ %"] = df.apply(
+    lambda row: round((row["Live Price"] - row["Recommended SRP"]) / row["Recommended SRP"] * 100, 2)
+    if pd.notnull(row["Live Price"]) and pd.notnull(row["Recommended SRP"])
+    else None,
+    axis=1
+)
 
     st.dataframe(df)
